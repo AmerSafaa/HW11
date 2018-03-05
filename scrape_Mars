@@ -1,0 +1,145 @@
+# Dependencies
+from bs4 import BeautifulSoup
+import requests
+import pymongo
+import pandas as pd
+import time
+import splinter
+from splinter import Browser
+from selenium import webdriver
+
+
+# Initialize PyMongo to work with MongoDBs
+conn = 'mongodb://localhost:27017'
+client = pymongo.MongoClient(conn)
+
+# Initialize PyMongo to work with MongoDBs
+conn = 'mongodb://localhost:27017'
+client = pymongo.MongoClient(conn)
+def init_browser():
+    executable_path = {"executable_path": "C:\Users\Safaa\Desktop\PythonStuff\10-16-2017-Gw-Arlington-Class-Repository-DATA\Homework\13-Web-  Scraping-and-Document-Databases"}
+    return Browser("chrome", **executable_path, headless=False)
+
+
+def scrape():
+    browser = init_browser()
+    # create Mars_data dict that we can insert into mongo
+    Mars_data = {}
+    
+# Define database and collection
+db = client.mars_db
+collection = db.articles
+
+soup = BeautifulSoup(response.text, "lxml")
+
+# Create BeautifulSoup object; extract title and pargapgrah
+news_title = soup.title.text.strip()
+
+# add our News_title to Mars data with a key of header
+    Mars_data["h1"] = news_title
+
+# Text of the paragraph
+news_p = soup.body.p.text
+
+# add our News_title to Mars data with a key of paragraph
+    Mars_data["h4"] = news_title
+
+# JPL Mars Space Images - Featured Image
+
+executable_path = {'executable_path':'C:\Program Files (x86)\Google\Chrome\Application'}
+browser = splinter.Browser('chrome', **executable_path)
+#browser.visit('https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars')
+#featured_image_url = browser.find_by_tag("img")
+#print(featured_image_url["src"])
+
+url1 = "https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars"
+browser.visit(url1)
+
+# search for Mars
+browser.fill("searchKeyword", "Mars")
+
+# find button and click it to search
+button = browser.find_by_name("button")
+button.click()
+time.sleep(2)
+html = browser.html
+# create a soup object from the html
+img_soup = BeautifulSoup(html, "html.parser")
+elem = img_soup.find_by_tag("img")
+feature_image_url = elem.find("img")["src"]
+
+# add our Mars Image to Mars data with a key of image
+    Mars_data["img"] = elem
+    
+    
+# add our Image URl to Mars data with a key of href
+    Mars_data["href"] = feature_image_url
+
+# Twitter Mars Weather
+url2= 'https://twitter.com/marswxreport?lang=en'
+
+# Retrieve page with the requests module
+response2 = requests.get(url2)
+soup2 = BeautifulSoup(response2.content, "lxml")
+
+# Text of the most recent tweet
+recent_tweet=soup2.find('p', class_='TweetTextSize TweetTextSize--normal js-tweet-text tweet-text')
+mars_weather = recent_tweet.text.strip()
+
+# add our Weather to Mars data with a key of paragraph
+    Mars_data["p"] = mars_weather
+
+
+# Mars Facts webpage
+url3='http://space-facts.com/mars/'
+
+tables = pd.read_html(url3)
+
+# add our Facts table to Mars data with a key of paragraph
+    Mars_data["p"] = tables
+
+
+# Mars Hemisperes
+url4='https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+
+image_url=[]
+image_title=[]
+executable_path = {'executable_path':'C:\Program Files (x86)\Google\Chrome\Application'}
+browser = splinter.Browser('chrome', **executable_path)
+
+browser.visit(url4)
+
+# search for Mars
+browser.fill("searchKeyword", "Mars")
+
+# find button and click it to search
+button2 = browser.find_by_name("button")
+button2.click()
+time.sleep(2)
+html = browser.html
+# create a soup object from the html
+img_soup2 = BeautifulSoup(html, "html.parser")
+elem1 = img_soup2.find_by_tag("img")
+image_url = elem1.find("img")["src"]
+image_title = elem1.find('h2', class_='title')
+
+
+# add our hemisphere images to Mars data with a key of img and subtitles
+Mars_data["img"]=elem1
+Mars_data["href"] = image_url
+Mars_data["h4"] = image_title
+
+
+# add it to our Mars data dict
+Mars_data["report"] = build_report(Mars_report)
+# return our Mars data dict
+return Mars_data
+
+
+# helper function to build Mars report
+def build_report(Mars_report):
+    final_report = ""
+    for p in surf_report:
+        final_report += " " + p.get_text()
+        print(final_report)
+    return final_report
